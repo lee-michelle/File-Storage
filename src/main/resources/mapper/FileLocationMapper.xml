@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.enableets.edu.filestorage.master.data.dao.FileLocationDAO">
+	<select id="getByFileId" parameterType="String" resultType="com.enableets.edu.filestorage.master.data.po.FileLocationPO">
+	select 
+		sfl.file_id as fileId,
+		sfl.path as path,
+		sfl.slave_id as slaveId	
+	from storage_file as sf 
+		JOIN storage_file_location as sfl
+		ON sf.file_id = sfl.file_id 
+		JOIN storage_slave as ss 
+		ON sfl.slave_id = ss.slave_id
+		where sf.file_id = #{fileId} and sf.status = 'ON'
+	</select>
+	
+	
+</mapper>

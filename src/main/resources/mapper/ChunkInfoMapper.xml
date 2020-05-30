@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.enableets.edu.filestorage.master.data.dao.ChunkDAO">
+
+	<select id="query" parameterType="java.util.Map" resultType="com.enableets.edu.filestorage.master.data.po.ChunkInfoPO">
+		select 
+			file_md5 as fileMd5,
+			position as position,
+			chunk_size as chunkSize,
+			chunk_md5 as chunkMd5,
+			size as size,
+			slave_id as slaveId,
+			file_size as fileSize,
+			path as path,
+			create_time as createTime		
+		from storage_chunk where  1=1
+			<if test="fileMd5 != null and fileMd5 !=''">
+				and file_md5 = #{fileMd5}
+			</if>
+			
+			<if test="chunkSize != null and chunkSize !=''">
+				and chunk_size = #{chunkSize}
+			</if>
+	</select>
+</mapper>

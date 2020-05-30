@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.enableets.edu.filestorage.master.data.dao.SlaveDAO">
+	
+	<select id="selectStandbySlave" parameterType="Map" resultType="com.enableets.edu.filestorage.master.data.po.SlavePO" >
+        select ss.slave_id as slaveId,
+            ss.name as name,
+            ss.read_uri as readUri,
+            ss.write_uri as writeUri,
+            ss.sync_uri as syncUri,
+            ss.admin_uri as adminUri,
+            ss.`status` ,
+            ss.readonly as readonly,
+            ssg.group_id as groupId,
+            ss.create_time as createTime,
+            ss.update_time as updateTime,
+            ss.last_heartbeat_time as lastHeartbeatTime,
+            ssg.group_id as groupId
+            from storage_slave as ss , storage_slave_group as ssg
+            where ss.slave_id = ssg.slave_id and ssg.group_id in (
+                select group_id from storage_slave_group where slave_id = #{slaveId}
+            )
+            and status = 'ON' and ss.slave_id != #{slaveId}
+    </select>
+
+
+	<select id="query"  resultType="com.enableets.edu.filestorage.master.data.po.SlavePO">
+        select
+            ss.slave_id as slaveId,
+            ss.name as name,
+            ss.read_uri as readUri,
+            ss.write_uri as writeUri,
+            ss.sync_uri as syncUri,
+            ss.admin_uri as adminUri,
+            ss.`status` ,
+            ss.readonly as readonly,
+            ss.description as description,
+            ss.create_time as createTime,
+            ss.last_heartbeat_time as lastHeartbeatTime,
+            ss.update_time as updateTime,
+            ssg.group_id as groupId
+            from storage_slave as ss
+            left join storage_slave_group as ssg on ss.slave_id = ssg.slave_id
+            <where>
+	            <if test="status != null and status !=''">
+	            	and ss.`status` = #{status}
+	            </if>
+	            <if test="readonly != null and readonly !=''">
+	            	and ss.readonly = #{readonly}
+	            </if>
+            </where>
+    </select>
+    
+    <!-- 更新心跳时间 -->
+    <update id="updateHeartBeatTime" parameterType="java.util.Map">
+    	update storage_slave  
+    		SET 
+				last_heartbeat_time = #{lastHeartbeatTime}
+			WHERE
+				slave_id = #{slaveId}
+    </update>
+    
+    <select id="queryBySlaveId" resultType="com.enableets.edu.filestorage.master.data.po.SlavePO">
+    	select
+            slave_id as slaveId,
+            name as name,
+            read_uri as readUri,
+            write_uri as writeUri,
+            sync_uri as syncUri,
+            admin_uri as adminUri,
+            `status`,
+            readonly as readonly,
+            create_time as createTime,
+            update_time as updateTime,
+            last_heartbeat_time as lastHeartbeatTime
+            from storage_slave 
+            where slave_id = #{slaveId}
+    </select>
+    
+    <select id="queryAll"  resultType="com.enableets.edu.filestorage.master.data.po.SlavePO">
+        select
+            ss.slave_id as slaveId,
+            ss.name as name,
+            ss.read_uri as readUri,
+            ss.write_uri as writeUri,
+            ss.sync_uri as syncUri,
+            ss.admin_uri as adminUri,
+            ss.`status` ,
+            ss.readonly as readonly,
+            ss.description as description,
+            ss.create_time as createTime,
+            ss.last_heartbeat_time as lastHeartbeatTime,
+            ss.update_time as updateTime,
+            ssg.group_id as groupId
+            from storage_slave as ss
+            left join storage_slave_group as ssg on ss.slave_id = ssg.slave_id
+    </select>
+</mapper>

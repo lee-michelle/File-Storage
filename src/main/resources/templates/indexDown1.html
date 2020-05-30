@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title>Insert title here</title>
+<script type="text/javascript" th:src="@{/custom/content/js/tools/jquery-3.0.0.min.js}"></script>
+<script type="text/javascript">
+
+
+</script>
+
+</head>
+<body>
+<ul class="AmendBox" style="margin-top: 20px">
+	<li class="Amend_list_1" >
+		    <span class="list_Title"><em>*</em><b>文件</b></span> 
+
+	    <div class="file_box_warp"> 
+			<ul id="thelist" class="file_box uploader-list"> 
+			</ul>  
+		</div>	 
+		<form th:action="@{manager/master/download}" method="get" >
+			<input type="text" name="fileId" id="fileId"/>
+			<button type="submit">下载</button>
+		</form>	
+	</li>
+	</ul>
+</body>
+</html>

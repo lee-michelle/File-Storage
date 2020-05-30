@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+	<head>
+		<meta charset="utf-8"></meta>
+		<title> upload file </title>
+		<link rel="stylesheet" th:href="@{webUploader/webuploader.css}" />
+		<link rel="stylesheet" th:href="@{bootstrap/bootstrap.min.css}" />
+		<style>
+			.wu-example {margin: 100px; border: 1px solid grey; padding: 15px; min-height: 300px; border-radius: 10px;}
+			.webuploader-container {width:100px; float:left;}
+			#ctlBtn {float:left;}
+			div.item {border-left:6px solid #337ab7; padding: 10px 10px 10px 80px; margin: 10px;}
+			.progress-ele {position: relative; top: -66px; left: -70px; height: 0px;}
+			.progress-num {background-color: #337ab7; width: 60px; height: 60px; border-radius: 30px; color: white; font-size: 20px; line-height: 60px; text-align: center;}
+		</style>
+		
+		<script th:src="@{jQuery/jquery-3.0.0.min.js}" > </script>
+		<script th:src="@{webUploader/webuploader.min.js}" > </script>
+		<script type="text/javascript">
+			$(function(){
+				var uploader = WebUploader.create({
+					swf: 'webUploader/Uploader.swf',// swf文件路径
+					server: '/storage/upload',// 文件接收服务端。
+					// 选择文件的按钮。可选。
+					// 内部根据当前运行是创建，可能是input元素，也可能是flash.
+					pick: '#picker',
+					chunked: true,// 开起分片上传,是否要分片处理大文件上传
+					chunkSize : 5242,//如果要分片，分多大一片？ 默认大小为5M
+					chunkRetry : 1,//如果某个分片由于网络问题出错，自动重传次数
+					threads: 1,
+					resize: false// 不压缩image, 默认如果是jpeg，文件上传前会压缩一把再上传！
+				});
+				// 当有文件被添加进队列的时候
+				uploader.on( 'fileQueued', function( file ) {
+					uploader.md5File(file).then(function(md5) {
+						$("#thelist").append( '<div id="' + file.id + '" md5="' + md5 + '" class="item">' +
+							'<h4 class="info">' + file.name + '</h4>' +
+							'<p class="state">等待上传...</p>' + '<div class="progress-ele"><div class="progress-num">0%</div></div>' +
+						'</div>' );
+					});
+				});
+				uploader.on( 'uploadBeforeSend', function( block, data, headers) { // // 如果有分块上传，则每个分块上传之前调用此函数 
+					var $item = $('div#' + block.file.id);
+					data.md5 = $item.attr("md5");    // 将存在file对象中的md5数据携带发送过去。
+					data.fileSize = data.size;
+					data.chunkIndex = block.chunk;
+					data.size= block.end - block.start; //当前分块大小
+					data.chunkSize = this.options.chunkSize;
+					
+					$.extend(headers, {"fileMd5": data.md5, "fileSize": data.fileSize,
+						"chunkIndex":data.chunkIndex, "chunkSize": data.chunkSize}); 
+					
+				});  
+				// 文件上传过程中创建进度条实时显示。
+				uploader.on( 'uploadProgress', function( file, percentage ) {
+					
+				});
+				uploader.on( 'uploadSuccess', function( file ) { // 上传成功
+					
+				});
+				
+				$("#ctlBtn").on("click", function(){
+					uploader.upload();
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div id="uploader" class="wu-example">
+			<div class="btns clearfix">
+				<div id="picker">选择文件</div>
+				<button id="ctlBtn" class="btn btn-default">开始上传</button>
+			</div>
+			<hr />
+			<!--用来存放文件信息-->
+			<div id="thelist" class="uploader-list"></div>
+		</div>
+	</body>
+</html>

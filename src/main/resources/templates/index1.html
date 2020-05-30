@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8"/>
+<title>Insert title here</title>
+<script type="text/javascript">
+
+  /* function submit1() {
+	  var fileName =  document.getElementById('fileId').files[0].name; //获得文件大小；
+	  debugger 
+	  $("#fileName").val(fileName);
+	  
+	  document.upload.action = "/manager/content/upload?fileName="+ fileName;
+
+	  document.upload.submit();
+	}  
+ */
+</script>
+
+</head>
+<body>
+<ul class="AmendBox" style="margin-top: 20px">
+	<li class="Amend_list_1" >
+		    <span class="list_Title"><em>*</em><b >文件</b></span> 
+
+	    <div class="file_box_warp"> 
+			<ul id="thelist" class="file_box uploader-list"> 
+			</ul>  
+		</div>	 
+		<!-- <form th:action="@{manager/content/upload}" method="post" enctype="multipart/form-data"> -->
+		<form name="upload" th:action="@{manager/master/upload}" method="post" enctype="multipart/form-data">
+			<input type="file" name="file" id="fileId"/>
+			<!-- <input hidden="hidden" id="fileName" name="fileName"/> -->
+			<button type="submit" >上传</button>
+		</form>	
+	</li>
+	</ul>
+</body>
+</html>

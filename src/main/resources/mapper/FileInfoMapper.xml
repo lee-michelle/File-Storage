@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.enableets.edu.filestorage.master.data.dao.FileDAO">
+
+	
+	<select id="query" parameterType="java.util.Map" resultMap="FileInfoMap">
+		SELECT
+			sf.file_id AS fileId,
+			sf.`name` ,
+			sf.size ,
+			sf.size_display AS sizeDisplay,
+			sf.ext,
+			sf.md5,
+			sf.alias_name as aliasName,
+			sf.upload_time as uploadTime,
+			sfl.slave_id as slaveId,
+			sfl.create_time as createTimeLocation,
+			ss.name as slaveName,
+			ssg.group_id as groupId
+		FROM
+			`storage_file` as sf 
+		LEFT JOIN storage_file_location as sfl ON sf.file_id = sfl.file_id
+		LEFT JOIN storage_slave as ss ON sfl.slave_id = ss.slave_id
+		LEFT JOIN storage_slave_group as ssg ON ssg.slave_id = ss.slave_id
+		WHERE sf.`status` = 'ON'
+		<if test="fileName !=null and fileName !=''">
+			AND sf.name = #{fileName}
+		</if>
+		<if test="md5 !=null and md5 !=''">
+			AND sf.md5 = #{md5}
+		</if>
+			
+	</select>
+	<select id="getByFileId" parameterType="java.lang.String" resultType="com.enableets.edu.filestorage.master.data.po.FilePO">
+		SELECT
+			file_id AS fileId,
+			uuid,
+			`name`,
+			size,
+			size_display AS sizeDisplay,
+			ext,
+			md5,
+			alias_name as aliasName,
+			`status`,
+			description,
+			update_time as updateTime
+		FROM
+			`storage_file` 
+		WHERE  status = 'ON' and file_id = #{fileId} 
+			
+	</select>
+	
+	<select id="getFileInfo" parameterType="java.util.Map" resultType="com.enableets.edu.filestorage.master.data.po.FilePO">
+		SELECT
+			file_id AS fileId,
+			uuid,
+			`name`,
+			size,
+			size_display AS sizeDisplay,
+			ext,
+			md5,
+			alias_name as aliasName,
+			`status`,
+			description,
+			update_time as updateTime
+		FROM
+			`storage_file` 
+		WHERE status = 'ON'
+		<if test="fileId != null and fileId != ''" >
+			and file_id = #{fileId}
+		</if>
+		<if test="aliasName != null and aliasName != ''" >
+			and alias_name = #{aliasName}
+		</if>
+	</select>
+	
+	 <resultMap type="com.enableets.edu.filestorage.master.data.po.FilePO" id="FileInfoMap">
+		<id property="fileId" column="fileId"/>
+		<result property="slaveId" column="slaveId"/>
+		<result property="name" column="name"/>
+		<result property="aliasName" column="aliasName"/>
+		<result property="size" column="size"/>
+		<result property="sizeDisplay" column="sizeDisplay"/>
+		<result property="ext" column="ext"/>
+		<result property="md5" column="md5"/>
+		<result property="uploadTime" column="uploadTime" jdbcType="DATE"/>
+		<collection property="locations" ofType="com.enableets.edu.filestorage.master.data.po.FileLocationPO">
+			<id property="slaveId" column="slaveId"/>
+			<result property="createTime" column="createTimeLocation" jdbcType="DATE"/>
+			<result property="slaveName" column="slaveName"/>
+			<result property="groupId" column="groupId"/>
+		</collection>
+		
+	</resultMap>
+</mapper>

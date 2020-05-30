@@ -1,0 +1,66 @@
+
+# 日志配置
+logging:
+    config: classpath:logback.xml
+    
+druid:
+    url: jdbc:mysql://localhost:3306/file_storage
+    username: root
+    password: toyo123
+    initial-size: 1
+    min-idle: 1
+    max-active: 20
+    test-on-borrow: true 
+
+server:
+      port: 8087
+storage:
+  slave:
+    masterUrl: http://localhost:8087/storage/
+    repository: E:/2222 # 文件存储目录
+    maxWorkThread: 1
+    slaveId: 8126A422C77241DC9BB947423DC6F0E4
+    
+    workQueue:
+      putUrl: http://192.168.118.37:9506/microservice/workqueue/put #新增任务
+      statusUrl: http://192.168.118.37:9506/microservice/workqueue/task/statust/set #更新任务状态
+      clientId: filestorage
+      
+    estimateCostTime: 2000 #预估当前任务执行所花费的时间
+    sizeThreshold: 10240  #用于设置是否将上传文件以临时文件的形式保存在磁盘的临界值（以字节为单位的int值）
+    tmpDir: E:/temp #文件上传临时存储目录(/usr/local/tmpdir)
+    
+  master: 
+    sync: false #开关控制是否开启同步，true：是，false：否
+    policy: polling #polling; 轮循  random：随机
+    
+  host: 
+    max-total-connections: 500
+    max-per-route-connections: 100
+    time-to-live: -1
+    socket-timeout-millis: 60000
+    connect-timeout-millis: 60000
+    
+  health:
+    evictionInterval: 20    #扫描服务列表间隔时间，单位秒；小于等于0，则不启动
+    leaseExpirationDuration: 600 #600秒还未收到心跳的话，就将该服务设置为失效，单位秒
+    heartbeat: 
+      interval: 60 #心跳信号推送时间，小于等于0，则不启动
+    
+spring: 
+     application:
+          name: file-storage
+     thymeleaf:
+          cache: false   
+     messages:
+          basename: i18n/lang
+          encoding: UTF-8  
+     http:  #springmvc上传文件大小设定
+        multipart:
+          enabled: true
+          max-file-size: 100MB #(这里是限制的文件大小)
+          max-request-size: 100MB #(这里是限制的文件大小)
+
+mybatis:
+    config-location: classpath:mybatis-config.xml
+    mapper-locations: classpath*:mapper/*.xml, classpath*:mapper/*/*.xml
